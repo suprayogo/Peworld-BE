@@ -27,4 +27,17 @@ module.exports = [
     method: "delete",
     cache: false,
   },
+  {
+    path: `${version}/job`,
+    controllers: require("../controllers/Users").addJob,
+    validator: require("../controllers/Users/validator").job, // global validator
+    method: "post",
+    cache: false,
+  },
+  {
+    path: `${version}/job/:id`,
+    controllers: require("../controllers/Users").deleteJob,
+    method: "delete",
+    cache: false,
+  },
 ];

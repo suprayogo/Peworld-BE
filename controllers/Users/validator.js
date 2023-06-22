@@ -7,6 +7,12 @@ module.exports = {
     description: "required|string|minLength:10|maxLength:100",
     domicile: "required|string|maxLength:40",
   },
+  job: {
+    position: "required|string|maxLength:30",
+    company: "required|string|maxLength:20",
+    date: "required|dateFormat:MM-YYYY|maxLength:20",
+    description: "required|string|minLength:10|maxLength:100",
+  },
   skills: {
     skills: "required|array|arrayUnique",
   },
