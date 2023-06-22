@@ -46,4 +46,11 @@ module.exports = [
     method: "delete",
     cache: false,
   },
+  {
+    path: `${version}/contact/:id`,
+    controllers: require("../controllers/Users").addContact,
+    validator: require("../controllers/Users/validator").contact, // global validator
+    method: "post",
+    cache: false,
+  },
 ];

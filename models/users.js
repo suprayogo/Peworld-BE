@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
       },
       skills: DataTypes.ARRAY(DataTypes.STRING),
+      role: DataTypes.STRING,
       job_history: DataTypes.ARRAY(DataTypes.JSON),
       updatedAt: {
         allowNull: false,

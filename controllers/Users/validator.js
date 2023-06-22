@@ -16,4 +16,8 @@ module.exports = {
   skills: {
     skills: "required|array|arrayUnique",
   },
+  contact: {
+    subject: "required|string|maxLength:50",
+    description: "required|string|maxLength:200",
+  },
 };

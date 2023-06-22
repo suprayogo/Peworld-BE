@@ -26,6 +26,10 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
+      role: {
+        type: Sequelize.STRING,
+        defaultValue: "user",
+      },
       domicile: { allowNull: true, type: Sequelize.STRING, defaultValue: "-" },
       description: {
         allowNull: true,

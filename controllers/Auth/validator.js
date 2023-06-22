@@ -10,5 +10,6 @@ module.exports = {
     company: "required|string|maxLength:20",
     job_title: "required|string|maxLength:20",
     phone: "required|string|maxLength:20|phoneNumber",
+    role: "string|maxLength:10",
   },
 };

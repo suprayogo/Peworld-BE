@@ -88,6 +88,7 @@ module.exports = {
         ...requestBody,
         password: hashPassword,
         photo: photo[rndInt],
+        role:( requestBody.role ?? "user").trim().toLowerCase(),
       });
 
       res.status(200).json({

@@ -312,4 +312,44 @@ module.exports = {
       });
     }
   },
+  // add contact
+  addContact: async (req, res) => {
+    try {
+      const target_id = req.params.id;
+      const requestBody = req.body;
+      const { attachment } = req?.files ?? {};
+
+      const authorization = req.headers.authorization.slice(6).trim();
+      const { id } = jwt.verify(authorization, process.env.APP_SECRET_KEY);
+
+      const request = await model.users.findOne({
+        where: { id: target_id },
+      });
+
+      if(!request) {
+        throw {
+          message: "User target not found",
+          code: 400,
+        };
+      }
+
+      await model.contact.create({
+        ...requestBody,
+        created_by: id,
+        user_id: target_id,
+      });
+      
+      res.status(200).json({
+        status: "OK",
+        messages: "Contact success",
+        data: null,
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  }
 };
