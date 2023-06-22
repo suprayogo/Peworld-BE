@@ -3,22 +3,30 @@ const model = require("../../models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const bcryptSalt = bcrypt.genSaltSync(10);
+const redis = require("../../utils/redis");
 
 module.exports = {
   // post auth/login
   login: async (req, res) => {
     try {
+      let checkEmail,
+        cache = false;
       const requestBody = req.body;
+      const checkRedis = await redis.get(requestBody.email);
 
-      const checkEmail = await model.users.findOne({
-        where: { email: requestBody.email },
-      });
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        checkEmail = { dataValues: JSON.parse(checkRedis) };
+      } else {
+        checkEmail = await model.users.findOne({
+          where: { email: requestBody.email },
+        });
+
+        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 100);
+      }
 
       if (!checkEmail) {
-        throw {
-          message: "Email is not registered",
-          code: 400,
-        };
+        throw { cache, message: "Email is not registered", code: 400 };
       }
 
       const compare = await bcrypt.compare(
@@ -27,24 +35,23 @@ module.exports = {
       );
 
       if (!compare) {
-        throw {
-          message: "Incorrect Password",
-          code: 400,
-        };
+        throw { cache, message: "Incorrect Password", code: 400 };
       }
 
       const token = jwt.sign(checkEmail.dataValues, process.env.APP_SECRET_KEY);
 
       res.status(200).json({
+        cache,
         status: "OK",
         messages: "Login success",
         data: {
           token,
-          user: checkEmail
+          user: checkEmail,
         },
       });
     } catch (error) {
       res.status(error?.code ?? 500).json({
+        cache: error?.cache,
         status: "ERROR",
         messages: error?.message ?? "Something wrong in our server",
         data: null,
@@ -55,14 +62,25 @@ module.exports = {
   // post auth/register
   register: async (req, res) => {
     try {
+      let checkEmail,
+        cache = false;
       const requestBody = req.body;
+      const checkRedis = await redis.get(requestBody.email);
 
-      const checkEmail = await model.users.findOne({
-        where: { email: requestBody.email },
-      });
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        checkEmail = { dataValues: JSON.parse(checkRedis) };
+      } else {
+        checkEmail = await model.users.findOne({
+          where: { email: requestBody.email },
+        });
+
+        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 100);
+      }
 
       if (checkEmail) {
         throw {
+          cache,
           message: "Email is already registered",
           code: 400,
         };
@@ -82,22 +100,21 @@ module.exports = {
         return Math.floor(Math.random() * (max - min + 1) + min);
       }
 
-      const rndInt = randomIntFromInterval(0, 5)
+      const rndInt = randomIntFromInterval(0, 5);
 
       await model.users.create({
         ...requestBody,
         password: hashPassword,
         photo: photo[rndInt],
-        role:( requestBody.role ?? "user").trim().toLowerCase(),
+        role: (requestBody.role ?? "user").trim().toLowerCase(),
       });
 
-      res.status(200).json({
-        status: "OK",
-        messages: "Insert success",
-        data: null,
-      });
+      res
+        .status(200)
+        .json({ cache, status: "OK", messages: "Insert success", data: null });
     } catch (error) {
       res.status(error?.code ?? 500).json({
+        cache: error?.cache,
         status: "ERROR",
         messages: error?.message ?? "Something wrong in our server",
         data: null,
