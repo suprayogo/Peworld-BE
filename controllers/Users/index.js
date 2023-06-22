@@ -2,6 +2,9 @@ const model = require("../../models");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const cloudinary = require("../../utils/cloudinary");
+const transporter = require("../../utils/nodemailer");
+const fs = require("fs");
+const mustache = require("mustache");
 
 module.exports = {
   // get users
@@ -317,28 +320,48 @@ module.exports = {
     try {
       const target_id = req.params.id;
       const requestBody = req.body;
-      const { attachment } = req?.files ?? {};
 
       const authorization = req.headers.authorization.slice(6).trim();
-      const { id } = jwt.verify(authorization, process.env.APP_SECRET_KEY);
+      const { id, fullname } = jwt.verify(
+        authorization,
+        process.env.APP_SECRET_KEY
+      );
 
       const request = await model.users.findOne({
         where: { id: target_id },
       });
 
-      if(!request) {
+      if (!request) {
         throw {
           message: "User target not found",
           code: 400,
         };
       }
 
+      const template = fs.readFileSync("./template/contact.html", {
+        encoding: "utf-8",
+      });
+
+      const mailOptions = {
+        from: "bilkisismail07@gmail.com",
+        to: request?.dataValues?.email,
+        subject: requestBody?.subject,
+        html: mustache.render(template, {
+          subject: requestBody?.subject,
+          body: requestBody?.description,
+          sender: fullname,
+          name: request?.dataValues?.fullname,
+        }),
+      };
+
+      await transporter.sendMail(mailOptions);
+
       await model.contact.create({
         ...requestBody,
         created_by: id,
         user_id: target_id,
       });
-      
+
       res.status(200).json({
         status: "OK",
         messages: "Contact success",
@@ -351,5 +374,5 @@ module.exports = {
         data: null,
       });
     }
-  }
+  },
 };
