@@ -1,5 +1,4 @@
 const version = "/v1";
-const { uploadSingle } = require("../utils/images");
 
 module.exports = [
   {
@@ -11,11 +10,7 @@ module.exports = [
   {
     path: `${version}/auth/register`,
     controllers: require("../controllers/Auth").register,
+    validator: require("../controllers/Auth/validator").register, // global validator
     method: "post",
-  },
-  {
-    path: `${version}/auth/logout/:id`,
-    controllers: require("../controllers/Auth").logout,
-    method: "get",
   },
 ];
