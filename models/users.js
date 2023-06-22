@@ -25,16 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.DATE,
       },
-      skills: DataTypes.ARRAY(DataTypes.STRING),
-      job_history: {
-        type: DataTypes.STRING,
-        get: function () {
-          return JSON.parse(this.getDataValue("job_history"));
-        },
-        set: function (val) {
-          return this.setDataValue("job_history", JSON.stringify(val));
-        },
+      photo: {
+        type: DataTypes.TEXT,
       },
+      skills: DataTypes.ARRAY(DataTypes.STRING),
+      job_history: DataTypes.ARRAY(DataTypes.JSON),
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,

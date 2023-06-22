@@ -8,6 +8,7 @@ var Sentry = require("@sentry/node");
 var Tracing = require("@sentry/tracing");
 var fileUpload = require("express-fileupload");
 var compression = require("compression");
+require("dotenv").config();
 
 var app = express();
 var env = process.env.NODE_ENV || "development";

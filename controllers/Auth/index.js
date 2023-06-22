@@ -69,8 +69,26 @@ module.exports = {
       }
 
       const hashPassword = await bcrypt.hash(requestBody.password, bcryptSalt);
+      const photo = [
+        "https://www.w3schools.com/howto/img_avatar.png",
+        "https://www.w3schools.com/howto/img_avatar2.png",
+        "https://www.w3schools.com/w3images/avatar2.png",
+        "https://www.w3schools.com/w3images/avatar6.png",
+        "https://www.w3schools.com/w3images/avatar5.png",
+      ];
 
-      await model.users.create({ ...requestBody, password: hashPassword });
+      function randomIntFromInterval(min, max) {
+        // min and max included
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      const rndInt = randomIntFromInterval(0, 5)
+
+      await model.users.create({
+        ...requestBody,
+        password: hashPassword,
+        photo: photo[rndInt],
+      });
 
       res.status(200).json({
         status: "OK",

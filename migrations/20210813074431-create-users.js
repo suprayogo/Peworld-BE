@@ -35,11 +35,15 @@ module.exports = {
       skills: {
         allowNull: true,
         type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
       },
       job_history: {
         allowNull: true,
+        type: Sequelize.ARRAY(Sequelize.JSON),
+        defaultValue: [],
+      },
+      photo: {
         type: Sequelize.TEXT,
-        defaultValue: '[]',
       },
       createdAt: {
         allowNull: false,

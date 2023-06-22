@@ -15,6 +15,12 @@ module.exports = [
     cache: false,
   },
   {
+    path: `${version}/profile/picture`,
+    controllers: require("../controllers/Users").editProfilePicture,
+    method: "patch",
+    cache: false,
+  },
+  {
     path: `${version}/skills`,
     controllers: require("../controllers/Users").addSkills,
     validator: require("../controllers/Users/validator").skills, // global validator
