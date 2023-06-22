@@ -13,7 +13,6 @@ require("dotenv").config();
 var app = express();
 var env = process.env.NODE_ENV || "development";
 var indexRouter = require("./routes/index");
-const config = require(__dirname + "/../config/config.json")[env];
 
 // Compress all HTTP responses
 app.use(
@@ -85,8 +84,7 @@ app.use("/", indexRouter);
 app.use(function (req, res) {
   res.status(200).json({
     status: true,
-    messages: "Api running well",
-    config,
+    messages: "Api running well"
   });
 });
 
