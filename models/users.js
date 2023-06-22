@@ -19,10 +19,13 @@ module.exports = (sequelize, DataTypes) => {
       job_title: DataTypes.STRING,
       phone: DataTypes.STRING,
       password: DataTypes.STRING,
+      description: DataTypes.STRING,
+      domicile: DataTypes.STRING,
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
       },
+      skills: DataTypes.ARRAY(DataTypes.STRING),
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,

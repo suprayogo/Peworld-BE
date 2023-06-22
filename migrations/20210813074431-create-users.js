@@ -26,6 +26,16 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
+      domicile: { allowNull: true, type: Sequelize.STRING, defaultValue: "-" },
+      description: {
+        allowNull: true,
+        type: Sequelize.STRING,
+        defaultValue: "-",
+      },
+      skills: {
+        allowNull: true,
+        type: Sequelize.ARRAY(Sequelize.STRING)
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
