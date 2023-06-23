@@ -8,7 +8,6 @@ redis = new Redis({
   host: "containers-us-west-71.railway.app", // Render Redis hostname, REGION-redis.render.com
   password: "Mz51ptUPntXMdzN1pMvN", // Provided password
   port: 7752, // Connection port
-  tls: true, // TLS required when externally connecting to Render Redis
   autoResubscribe: false,
 });
 
