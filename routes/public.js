@@ -13,4 +13,14 @@ module.exports = [
     validator: require("../controllers/Auth/validator").register, // global validator
     method: "post",
   },
+  {
+    path: `${version}/job`,
+    controllers: require("../controllers/Users").getAccountList,
+    method: "get",
+  },
+  {
+    path: `${version}/job/filter`,
+    controllers: require("../controllers/Users").filterAccountList,
+    method: "get",
+  },
 ];

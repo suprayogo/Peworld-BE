@@ -6,6 +6,7 @@ const transporter = require("../../utils/nodemailer");
 const fs = require("fs");
 const mustache = require("mustache");
 const redis = require("../../utils/redis");
+const Op = require("sequelize").Op;
 
 module.exports = {
   // get users
@@ -325,7 +326,7 @@ module.exports = {
       const requestBody = req.body;
 
       const authorization = req.headers.authorization.slice(6).trim();
-      const { id, fullname, email } = jwt.verify(
+      const { id, fullname } = jwt.verify(
         authorization,
         process.env.APP_SECRET_KEY
       );
@@ -342,9 +343,6 @@ module.exports = {
 
         redis.set(`target_id_${target_id}`, JSON.stringify(request), "EX", 60);
       }
-      
-      console.log(checkRedis);
-      console.log(request);
 
       if (!request) {
         throw {
@@ -383,6 +381,116 @@ module.exports = {
         status: "OK",
         messages: "Contact success",
         data: null,
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        cache: error?.cache,
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  },
+
+  // list account
+  getAccountList: async (req, res) => {
+    try {
+      let request,
+        cache = false;
+
+      const limit = req?.query?.limit ?? 5;
+      const page = ((req?.query?.page ?? 1) - 1) * limit;
+      const checkRedis = await redis.get(
+        `list_user_limit_${limit}_page_${page}`
+      );
+      const checkAllData = await redis.get(`count_list_user_page`);
+
+      if (
+        checkAllData &&
+        (parseInt(req?.query?.page) ?? 1) > parseInt(checkAllData)
+      ) {
+        throw {
+          cache,
+          message: "Page not found",
+          code: 400,
+        };
+      }
+
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        request = JSON.parse(checkRedis);
+      } else {
+        request = await model.users.findAndCountAll({
+          where: {
+            role: {
+              [Op.eq]: "user",
+            },
+          },
+          attributes: { exclude: ["password", "role"] },
+          offset: page,
+          limit: limit,
+        });
+
+        redis.set(
+          `list_user_limit_${limit}_page_${page}`,
+          JSON.stringify(request),
+          "EX",
+          60
+        );
+
+        redis.set(
+          `count_list_user_page`,
+          Math.ceil(request?.count / limit),
+          "EX",
+          30
+        );
+      }
+
+      res.status(200).json({
+        cache,
+        status: "OK",
+        messages: "Job success",
+        data: {
+          current_page: parseInt(req?.query?.page) ?? 1,
+          total_page: Math.ceil(request?.count / limit),
+          ...request,
+        },
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        cache: error?.cache,
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  },
+  filterAccountList: async (req, res) => {
+    try {
+      let request,
+        cache = false;
+      const keyword = req.query.keyword;
+
+      request = await model.users.findAll({
+        where: {
+          role: {
+            [Op.eq]: "user",
+          },
+          // fullname: {
+          //   [Op.iLike]: `%${keyword}%`,
+          // },
+          skills: {
+            [Op.iLike]: [`%${keyword}%`],
+          },
+        },
+        attributes: { exclude: ["password", "role"] },
+      });
+
+      res.status(200).json({
+        cache,
+        status: "OK",
+        messages: "Job filter success",
+        data: request,
       });
     } catch (error) {
       res.status(error?.code ?? 500).json({
