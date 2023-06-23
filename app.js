@@ -8,6 +8,7 @@ var Sentry = require("@sentry/node");
 var Tracing = require("@sentry/tracing");
 var fileUpload = require("express-fileupload");
 var compression = require("compression");
+var requestIp = require("request-ip");
 require("dotenv").config();
 
 var app = express();
@@ -82,9 +83,14 @@ app.use("/", indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res) {
+  var clientIp = requestIp.getClientIp(req);
+  const ipAddress = req.socket.remoteAddress;
+
   res.status(200).json({
     status: true,
-    messages: "Api running well"
+    messages: "Api running well",
+    clientIp: clientIp,
+    ipAddress,
   });
 });
 
