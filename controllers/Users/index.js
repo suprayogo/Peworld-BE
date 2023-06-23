@@ -5,6 +5,7 @@ const cloudinary = require("../../utils/cloudinary");
 const transporter = require("../../utils/nodemailer");
 const fs = require("fs");
 const mustache = require("mustache");
+const redis = require("../../utils/redis");
 
 module.exports = {
   // get users
@@ -318,21 +319,36 @@ module.exports = {
   // add contact
   addContact: async (req, res) => {
     try {
+      let request,
+        cache = false;
       const target_id = req.params.id;
       const requestBody = req.body;
 
       const authorization = req.headers.authorization.slice(6).trim();
-      const { id, fullname } = jwt.verify(
+      const { id, fullname, email } = jwt.verify(
         authorization,
         process.env.APP_SECRET_KEY
       );
 
-      const request = await model.users.findOne({
-        where: { id: target_id },
-      });
+      const checkRedis = await redis.get(`target_id_${target_id}`);
+
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        request = { dataValues: JSON.parse(checkRedis) };
+      } else {
+        request = await model.users.findOne({
+          where: { id: target_id },
+        });
+
+        redis.set(`target_id_${target_id}`, JSON.stringify(request), "EX", 60);
+      }
+      
+      console.log(checkRedis);
+      console.log(request);
 
       if (!request) {
         throw {
+          cache,
           message: "User target not found",
           code: 400,
         };
@@ -363,12 +379,14 @@ module.exports = {
       });
 
       res.status(200).json({
+        cache,
         status: "OK",
         messages: "Contact success",
         data: null,
       });
     } catch (error) {
       res.status(error?.code ?? 500).json({
+        cache: error?.cache,
         status: "ERROR",
         messages: error?.message ?? "Something wrong in our server",
         data: null,

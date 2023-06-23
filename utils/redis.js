@@ -9,6 +9,7 @@ redis = new Redis({
   password: "Mz51ptUPntXMdzN1pMvN", // Provided password
   port: 7752, // Connection port
   autoResubscribe: false,
+  maxRetriesPerRequest: 5,
 });
 
 module.exports = redis;
