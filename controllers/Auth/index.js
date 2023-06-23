@@ -22,7 +22,7 @@ module.exports = {
           where: { email: requestBody.email },
         });
 
-        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 100);
+        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 60);
       }
 
       if (!checkEmail) {
@@ -75,7 +75,7 @@ module.exports = {
           where: { email: requestBody.email },
         });
 
-        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 100);
+        redis.set(requestBody.email, JSON.stringify(checkEmail), "EX", 60);
       }
 
       if (checkEmail) {
