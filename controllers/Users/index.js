@@ -136,7 +136,7 @@ module.exports = {
       });
 
       const skills = request?.dataValues?.skills ?? [];
-      const uniq = [...new Set([...skills, ...requestBody?.skills])]; 
+      const uniq = [...new Set([...skills, ...requestBody?.skills])];
 
       const payload = {
         ...request?.dataValues,
@@ -392,6 +392,60 @@ module.exports = {
       });
     }
   },
+  // detail account
+  getContact: async (req, res) => {
+    try {
+      const authorization = req.headers.authorization.slice(6).trim();
+      const { id } = jwt.verify(authorization, process.env.APP_SECRET_KEY);
+
+      let request,
+        cache = false;
+
+      const checkRedis = await redis.get(`contact_${id}`);
+
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        request = JSON.parse(checkRedis);
+      } else {
+        model.contact.belongsTo(model.users, {
+          foreignKey: {
+            name: "user_id",
+            allowNull: true,
+          },
+        });
+
+        request = await model.contact.findAll({
+          where: { created_by: id },
+          include: [
+            {
+              model: model.users,
+              required: true,
+              attributes: ["id", "fullname", "email", "photo", "job_title"],
+            },
+          ],
+          attributes: {
+            exclude: ["created_by", "updatedAt"],
+          },
+        });
+
+        redis.set(`contact_${id}`, JSON.stringify(request), "EX", 10);
+      }
+
+      res.status(200).json({
+        cache,
+        status: "OK",
+        messages: "Contact success",
+        data: request,
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        cache: error?.cache,
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  },
 
   // list account
   getAccountList: async (req, res) => {
@@ -513,7 +567,7 @@ module.exports = {
         attributes: { exclude: ["password", "role"] },
       });
 
-      console.log(request)
+      console.log(request);
 
       res.status(200).json({
         cache,
@@ -560,25 +614,33 @@ module.exports = {
       });
     }
   },
-  // detail account 
+  // detail account
   getAccountById: async (req, res) => {
     try {
+      const id = req.params.id;
       let request,
         cache = false;
 
-      request = await model.users.findAll({
-        where: {
-          role: {
-            [Op.eq]: "user",
+      const checkRedis = await redis.get(`detail_${id}`);
+
+      if (checkRedis && checkRedis !== "null") {
+        cache = true;
+        request = JSON.parse(checkRedis);
+      } else {
+        request = await model.users.findOne({
+          where: { id },
+          attributes: {
+            exclude: ["password", "role", "updatedAt", "createdAt"],
           },
-        },
-        attributes: { exclude: ["password", "role"] },
-      });
+        });
+
+        redis.set(`detail_${id}`, JSON.stringify(request), "EX", 10);
+      }
 
       res.status(200).json({
         cache,
         status: "OK",
-        messages: "Job success",
+        messages: "Job detail success",
         data: request,
       });
     } catch (error) {
@@ -589,5 +651,5 @@ module.exports = {
         data: null,
       });
     }
-  }
+  },
 };

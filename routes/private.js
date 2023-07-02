@@ -47,6 +47,12 @@ module.exports = [
     cache: false,
   },
   {
+    path: `${version}/contact`,
+    controllers: require("../controllers/Users").getContact,
+    method: "get",
+    cache: false,
+  },
+  {
     path: `${version}/contact/:id`,
     controllers: require("../controllers/Users").addContact,
     validator: require("../controllers/Users/validator").contact, // global validator

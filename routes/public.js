@@ -28,4 +28,9 @@ module.exports = [
     controllers: require("../controllers/Users").getAllAccount,
     method: "get",
   },
+  {
+    path: `${version}/job/detail/:id`,
+    controllers: require("../controllers/Users").getAccountById,
+    method: "get",
+  },
 ];
