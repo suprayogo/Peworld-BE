@@ -23,4 +23,9 @@ module.exports = [
     controllers: require("../controllers/Users").filterAccountList,
     method: "get",
   },
+  {
+    path: `${version}/job/all`,
+    controllers: require("../controllers/Users").getAllAccount,
+    method: "get",
+  },
 ];

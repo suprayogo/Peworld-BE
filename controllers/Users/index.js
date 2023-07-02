@@ -136,10 +136,11 @@ module.exports = {
       });
 
       const skills = request?.dataValues?.skills ?? [];
+      const uniq = [...new Set([...skills, ...requestBody?.skills])]; 
 
       const payload = {
         ...request?.dataValues,
-        skills: [...skills, ...requestBody?.skills],
+        skills: uniq,
       };
 
       await model.users.update(payload, {
@@ -288,7 +289,7 @@ module.exports = {
 
       let job_history = request?.dataValues?.job_history ?? [];
 
-      if (!job_history[deleteId]) {
+      if (job_history.filter((res) => res.id === deleteId).length === 0) {
         throw {
           message: "Job id not found",
           code: 400,
@@ -465,6 +466,7 @@ module.exports = {
       });
     }
   },
+  // Filter account
   filterAccountList: async (req, res) => {
     try {
       let request,
@@ -490,6 +492,36 @@ module.exports = {
         cache,
         status: "OK",
         messages: "Job filter success",
+        data: request,
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        cache: error?.cache,
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  },
+  // get all account
+  getAllAccount: async (req, res) => {
+    try {
+      let request,
+        cache = false;
+
+      request = await model.users.findAll({
+        where: {
+          role: {
+            [Op.eq]: "user",
+          },
+        },
+        attributes: { exclude: ["password", "role"] },
+      });
+
+      res.status(200).json({
+        cache,
+        status: "OK",
+        messages: "Job success",
         data: request,
       });
     } catch (error) {
