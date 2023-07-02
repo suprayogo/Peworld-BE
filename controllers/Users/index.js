@@ -478,15 +478,42 @@ module.exports = {
           role: {
             [Op.eq]: "user",
           },
-          // fullname: {
-          //   [Op.iLike]: `%${keyword}%`,
+          [Op.or]: [
+            {
+              fullname: {
+                [Op.iLike]: `%${keyword}%`,
+              },
+            },
+            {
+              company: {
+                [Op.iLike]: `%${keyword}%`,
+              },
+            },
+            {
+              job_title: {
+                [Op.iLike]: `%${keyword}%`,
+              },
+            },
+            {
+              domicile: {
+                [Op.iLike]: `%${keyword}%`,
+              },
+            },
+            {
+              skills: {
+                [Op.contains]: [keyword],
+              },
+            },
+          ],
+
+          // skills: {
+          //   [Op.iLike]: [`%${keyword}%`],
           // },
-          skills: {
-            [Op.iLike]: [`%${keyword}%`],
-          },
         },
         attributes: { exclude: ["password", "role"] },
       });
+
+      console.log(request)
 
       res.status(200).json({
         cache,
@@ -533,4 +560,34 @@ module.exports = {
       });
     }
   },
+  // detail account 
+  getAccountById: async (req, res) => {
+    try {
+      let request,
+        cache = false;
+
+      request = await model.users.findAll({
+        where: {
+          role: {
+            [Op.eq]: "user",
+          },
+        },
+        attributes: { exclude: ["password", "role"] },
+      });
+
+      res.status(200).json({
+        cache,
+        status: "OK",
+        messages: "Job success",
+        data: request,
+      });
+    } catch (error) {
+      res.status(error?.code ?? 500).json({
+        cache: error?.cache,
+        status: "ERROR",
+        messages: error?.message ?? "Something wrong in our server",
+        data: null,
+      });
+    }
+  }
 };
