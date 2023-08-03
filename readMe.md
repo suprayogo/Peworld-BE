@@ -1,4 +1,16 @@
-# Express Starterkit ini  by rixki
+# Express Starterkit 
+
+
+
+<h3 align="center">Peworld API</h3>
+<p align="center">
+  <a href="https://hire-job.onrender.com/v1">View API Demo</a>
+  ·
+  <a href="https://github.com/suprayogo/hire_job_be/issues">Report Bug</a>
+</p>
+
+
+
 
 ## Install
 
@@ -46,3 +58,21 @@ sequelize db:migrate
 nodemon
 ```
 Thats all, you can use and customize this starterkit
+
+
+
+<!-- RELATED PROJECT -->
+## Related Project
+
+- [Peworld API](https://github.com/suprayogo/hire_job_be)
+- [Peworld Demo](https://hire-job-v1-rizki-suprayogo.vercel.app/)
+- [Peworld Front-End](https://github.com/suprayogo/hire-job-v1/)
+<!-- CONTACT INFO -->
+## Contact Info
+
+Contributors names and contact info:
+
+1. Rizki Suprayogo
+
+- [Linkedin](https://www.linkedin.com/in/rizki-suprayogo/)
+
