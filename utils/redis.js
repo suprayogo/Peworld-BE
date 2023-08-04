@@ -5,9 +5,9 @@ let redis;
 
 redis = new Redis({
   username: "default", // Render Redis name, red-xxxxxxxxxxxxxxxxxxxx
-  host: "containers-us-west-71.railway.app", // Render Redis hostname, REGION-redis.render.com
-  password: "Mz51ptUPntXMdzN1pMvN", // Provided password
-  port: 7752, // Connection port
+  host: "containers-us-west-39.railway.app", // Render Redis hostname, REGION-redis.render.com
+  password: "wTUWTkvmOLOJykzy2iWl", // Provided password
+  port: 5865, // Connection port
   autoResubscribe: false,
   maxRetriesPerRequest: 5,
 });
