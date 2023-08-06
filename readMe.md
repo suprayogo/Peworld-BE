@@ -4,9 +4,9 @@
 
 <h3 align="center">Peworld API</h3>
 <p align="center">
-  <a href="https://hire-job.onrender.com/v1">View API Demo</a>
+  <a href="https://rizki-naufal.onrender.com">View API Demo</a>
   ·
-  <a href="https://github.com/suprayogo/hire_job_be/issues">Report Bug</a>
+  <a href="https://github.com/suprayogo/Peworld-BE/issues">Report Bug</a>
 </p>
 
 
@@ -61,8 +61,7 @@ Thats all, you can use and customize this starterkit
 
 ## Endpoint List
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://elements.getpostman.com/redirect?entityId=26602283-94d4c1e1-835b-46b7-9c47-64d7d2cd4eae&entityType=collection)
-
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/27256912/2s9XxySZLc)
 
 <!-- RELATED PROJECT -->
 ## Related Project
